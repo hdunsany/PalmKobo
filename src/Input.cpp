@@ -11,6 +11,9 @@
 #ifndef ABS_MT_SLOT
 #define ABS_MT_SLOT 0x2f
 #endif
+#ifndef ABS_MT_TOUCH_MAJOR
+#define ABS_MT_TOUCH_MAJOR 0x30
+#endif
 #ifndef ABS_MT_POSITION_X
 #define ABS_MT_POSITION_X 0x35
 #endif
@@ -70,16 +73,30 @@ void TouchDecoder::feed(unsigned type, unsigned code, int value, std::vector<Tou
                     slot = value;
                     break;
                 case ABS_MT_TRACKING_ID:
-                    if (slot == 0) contact = value >= 0;
+                    if (value >= 0) {
+                        if (activeSlot < 0) activeSlot = slot;
+                        if (slot == activeSlot) contact = true;
+                    } else {
+                        if (activeSlot < 0 || slot == activeSlot) {
+                            contact = false;
+                            activeSlot = -1;
+                        }
+                    }
+                    break;
+                case ABS_MT_TOUCH_MAJOR:
+                    if (value == 0 && (activeSlot < 0 || slot == activeSlot)) {
+                        contact = false;
+                        activeSlot = -1;
+                    }
                     break;
                 case ABS_MT_POSITION_X:
-                    if (slot == 0) {
+                    if (activeSlot < 0 || slot == activeSlot) {
                         rawX = value;
                         moved = true;
                     }
                     break;
                 case ABS_MT_POSITION_Y:
-                    if (slot == 0) {
+                    if (activeSlot < 0 || slot == activeSlot) {
                         rawY = value;
                         moved = true;
                     }
@@ -96,7 +113,10 @@ void TouchDecoder::feed(unsigned type, unsigned code, int value, std::vector<Tou
             break;
 
         case EV_KEY:
-            if (code == BTN_TOUCH) contact = value != 0;
+            if (code == BTN_TOUCH) {
+                contact = value != 0;
+                if (!contact) activeSlot = -1;
+            }
             break;
 
         case EV_SYN:
@@ -208,6 +228,18 @@ std::string Input::scan(bool initial) {
                 input_absinfo ix{}, iy{};
                 ioctl(fd, EVIOCGABS(mt ? ABS_MT_POSITION_X : ABS_X), &ix);
                 ioctl(fd, EVIOCGABS(mt ? ABS_MT_POSITION_Y : ABS_Y), &iy);
+                if (ix.maximum <= ix.minimum && mt) {
+                    ioctl(fd, EVIOCGABS(ABS_X), &ix);
+                    ioctl(fd, EVIOCGABS(ABS_Y), &iy);
+                }
+                if (ix.maximum <= ix.minimum) {
+                    ix.minimum = 0;
+                    ix.maximum = (transform.swapAxes ? screenH : screenW) - 1;
+                }
+                if (iy.maximum <= iy.minimum) {
+                    iy.minimum = 0;
+                    iy.maximum = (transform.swapAxes ? screenW : screenH) - 1;
+                }
                 touchDecoder.configure({ix.minimum, ix.maximum}, {iy.minimum, iy.maximum},
                                        transform, screenW, screenH);
                 touchFd = fd;
