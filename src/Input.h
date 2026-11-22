@@ -54,6 +54,7 @@ class TouchDecoder {
     int screenW{1}, screenH{1};
 
     int slot{0};
+    int activeSlot{-1};
     int rawX{0}, rawY{0};
     bool contact{false}, contactPrev{false};
     bool moved{false};
