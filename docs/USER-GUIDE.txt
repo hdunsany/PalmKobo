@@ -1,0 +1,248 @@
+palmkobo - Palm OS on your Kobo
+===============================
+
+palmkobo runs Palm OS 4.1 (an emulated Palm m500) on a Kobo e-reader, using
+the CloudpilotEmu emulator. You get the Palm screen and Graffiti area on the
+e-ink display, the Palm's hardware buttons along the bottom, Bluetooth
+keyboard support, a virtual SD card you can fill and empty over USB, and
+your Palm's state is kept between sessions.
+
+STATUS: experimental. Developed and tested on a Kobo Clara BW. Other Kobo
+models that FBInk and NickelMenu support should work, but are untested -
+please report how it goes on yours.
+
+
+WHAT YOU NEED
+-------------
+
+  * A Kobo with NickelMenu installed (https://pgaskin.net/NickelMenu/).
+  * A Palm m500 ROM image, dumped from your own Palm m500.
+    No ROMs are included - Palm OS ROMs are copyrighted.
+    Tip: check that your ROM boots in CloudpilotEmu's web version
+    (https://cloudpilot-emu.github.io/app) before copying it to the Kobo.
+  * A computer to copy files to the Kobo over USB.
+
+
+INSTALLING
+----------
+
+1. Connect the Kobo to your computer and tap "Connect" on the Kobo.
+
+2. Make hidden files visible. Kobo folders start with a dot (.adds, .kobo).
+   Windows: File Explorer > View > Show > Hidden items
+            (also turn on "File name extensions").
+   macOS:   press Cmd+Shift+. in Finder.
+
+3. Open the KOBO folder in this package and copy what is inside it (the
+   .adds folder) to the root of the Kobo's drive. If you already have an
+   .adds folder, merge them - nothing of yours is replaced.
+
+   You should now have:
+     .adds/palmkobo/   (palmkobo itself)
+     .adds/nm/palmkobo (the NickelMenu entries)
+
+4. Copy your ROM into .adds/palmkobo and rename it to exactly
+       m500.rom
+   (With file name extensions visible, make sure it is not m500.rom.bin.)
+
+5. Eject the Kobo. NickelMenu now has "PalmOS" and "PalmOS input test".
+
+6. Run "PalmOS input test" first. Tap near each corner of the screen: the
+   cross must appear under your finger. Press the Kobo's power button to
+   leave the test. (If the cross is in the wrong place, see TROUBLESHOOTING.)
+
+7. Run "PalmOS". The first start boots the Palm from the ROM and takes you
+   through Palm OS setup (pen calibration etc.).
+
+
+USING IT
+--------
+
+The screen shows the Palm display, the Graffiti/silkscreen area below it,
+and a row of buttons:
+
+  DATE ADDR TODO MEMO   the Palm's four application buttons
+  ^  v                  the Palm's scroll rocker
+  RFSH                  full screen refresh (clears e-ink ghosting)
+  PWR                   the Palm's power button
+  EXIT                  tap twice to save and return to the Kobo
+
+Write Graffiti in the box as you would with a stylus; your finger's trail is
+shown while you write. Tap the silkscreen icons (Home, Menu, Calc, Find)
+as usual.
+
+Leaving: tap EXIT twice, or press the Kobo's power button. Your Palm is saved
+and the Kobo's own screen comes back. The next launch continues exactly where
+you left off.
+
+Autosave: while you use it, the Palm (and SD card) is saved at most every
+5 minutes, during a short pause in your typing or tapping.
+
+Idle exit: after 15 minutes without input, palmkobo saves and returns to the
+Kobo so it can sleep. A warning appears a minute before - tap the screen or
+press a key to stay.
+
+Note: the Kobo itself does not go to sleep while PalmOS is running.
+
+
+KEYBOARD (BLUETOOTH OR USB)
+---------------------------
+
+Connect the keyboard in the Kobo's own Bluetooth settings BEFORE starting
+PalmOS. "PalmOS input test" shows the keys it receives, so you can check it.
+
+  letters, numbers, punctuation (US layout)  typed into the Palm
+  Enter, Backspace, Tab, arrow keys          same on the Palm
+  F1 F2 F3 F4                                Date Book, Address, To Do, Memo
+  Page Up / Page Down                        scroll up / down
+  Esc (or F5)                                Palm Menu
+  F6 (or Home)                               Applications launcher
+  F7                                         Find
+  F8                                         Calculator
+  F9                                         full screen refresh
+
+Ctrl/Alt shortcuts are not passed to the Palm; use Esc for menus.
+Page-turn remotes (Page Up/Down only) also work, for scrolling.
+
+
+INSTALLING PALM APPS
+--------------------
+
+Two ways, both by copying files to the Kobo over USB:
+
+  .adds/palmkobo/install/   .prc/.pdb files here are installed into the
+                            Palm's main memory on the next launch (wait a
+                            few seconds after start). Installed files are
+                            moved to install/installed.
+
+  .adds/palmkobo/to-card/   files here are copied onto the virtual SD card
+                            on the next launch (see below). Apps put here
+                            show up in the launcher's card category.
+
+
+THE SD CARD
+-----------
+
+The Palm has a virtual SD card (.adds/palmkobo/card.img, 64 MB), created
+automatically on first launch.
+
+  Into the Palm:  copy files into .adds/palmkobo/to-card/ and start PalmOS.
+                  .prc/.pdb/.pqa files go to /PALM/Launcher (so apps appear
+                  in the launcher's card category); other files and folders
+                  keep their layout. Imported files move to to-card/imported.
+
+  Out of the Palm: after every exit, .adds/palmkobo/card-contents/ holds an
+                  exact copy of everything on the card. Copy files from there.
+                  Don't edit that folder - it is rewritten on every exit.
+
+In the Palm launcher, choose the card's category (top-right list) to see
+apps on the card. App > Copy... in the launcher menu copies apps between the
+Palm and the card. Apps that save plain text files to the card (VFS-aware
+editors) give you files you can open directly on your computer.
+
+To start with an empty card, delete card.img.
+
+
+GRAYSCALE
+---------
+
+Palm OS and most apps on the m500 draw in black and white. Apps written for
+grayscale Palms (for example the grayscale build of Space Trader) show 16
+shades of gray. While your finger is on the screen the display uses a fast
+black-and-white mode; grays return a moment after you lift it.
+
+
+A SECOND PALM: m515 (OPTIONAL)
+------------------------------
+
+If you also have a ROM dumped from a Palm m515 (colour, shown in grays):
+  1. Copy it to .adds/palmkobo/m515.rom
+  2. Open .adds/nm/palmkobo in a text editor and remove the # in front of the
+     "PalmOS m515" line.
+  3. Eject (restart the Kobo if the menu entry doesn't appear).
+The m515 keeps its own saved state (session-m515.img) and shares the SD card.
+
+
+SETTINGS
+--------
+
+.adds/palmkobo/palmkobo.ini can be edited with any text editor. Each setting
+is explained in the file. The most useful:
+
+  scale              screen size (0 = largest that fits)
+  touch_swap_axes,   fix touch orientation (auto, 0 or 1)
+  touch_mirror_x/y
+  graffiti_echo      show your finger's trail in the Graffiti box
+  full_refresh_every how often to do a flashing refresh to clear ghosting
+  autosave_minutes   0 turns autosave off
+  idle_exit_minutes  0 turns idle exit off
+  card_size_mb       size of a newly created SD card (4 - 128)
+  hotsync_name       your Palm user name
+
+
+OPTIONAL: SKIP THE "CONNECT" PROMPT
+-----------------------------------
+
+To make the Kobo connect to your computer as soon as it's plugged in, add
+this to .kobo/Kobo/Kobo eReader.conf:
+
+  [DeveloperSettings]
+  AutoUsbGadget=true
+
+(Downside: you can't read while it charges from a computer.) While PalmOS is
+running, the Kobo won't connect over USB at all - exit PalmOS first.
+
+
+TROUBLESHOOTING
+---------------
+
+Everything palmkobo does is logged in .adds/palmkobo/palmkobo.log.
+
+"ROM NOT FOUND" / "ROM NOT SUPPORTED" on screen
+    The ROM must be .adds/palmkobo/m500.rom and be a Palm m500 ROM. Check it
+    in CloudpilotEmu's web version.
+
+Taps land in the wrong place
+    Run "PalmOS input test", note where the cross appears, and set
+    touch_swap_axes / touch_mirror_x / touch_mirror_y in palmkobo.ini to 0 or
+    1 (instead of auto) until the cross follows your finger.
+
+Keyboard does nothing
+    Connect it in the Kobo's Bluetooth settings first, then start PalmOS.
+    Check "PalmOS input test", and look for "keyboard connected" in the log.
+
+The screen looks smeary or ghosted
+    Tap RFSH (or press F9).
+
+Start the Palm from scratch
+    Delete .adds/palmkobo/session.img (your Palm's saved state).
+
+Something is stuck
+    Hold the Kobo's power button to restart it. Your books and the Kobo are
+    not affected; the Palm is restored from its last save.
+
+
+UNINSTALLING
+------------
+
+Delete the folder .adds/palmkobo and the file .adds/nm/palmkobo, then eject.
+(This deletes your Palm's saved state and SD card - copy session.img and
+card.img somewhere first if you want to keep them.)
+
+
+CREDITS AND LICENCE
+-------------------
+
+palmkobo is free software under the GNU General Public License version 3
+(LICENSE.txt). It is built on:
+
+  CloudpilotEmu  https://github.com/cloudpilot-emu/cloudpilot  (GPL-3.0)
+  FBInk          https://github.com/NiLuJe/FBInk               (GPL-3.0)
+
+and is launched with NickelMenu (https://pgaskin.net/NickelMenu/).
+SOURCES.txt lists the exact versions used for this build; the source code is
+in the matching palmkobo-<version>-src.zip.
+
+Palm, Palm OS, Graffiti and the Palm device names are trademarks of their
+respective owners. palmkobo is not affiliated with Palm, Kobo or Rakuten.
+No Palm OS ROMs are included or distributed.
