@@ -1,5 +1,7 @@
 # palmkobo
 
+I built this with Claude AI because I'm good at coming up with dumb ideas but bad at actual programming. All the usual vibe coding / AI slop warnings definitely apply here.
+
 Run Palm OS 4.1 (Palm m500) on a Kobo e-reader. palmkobo is a small front end
 around the CloudpilotEmu emulator core. It swaps CloudpilotEmu's SDL window for
 the Kobo's e-ink screen (through FBInk) and its touchscreen, and it's launched
